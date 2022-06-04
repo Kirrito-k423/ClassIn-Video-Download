@@ -8,14 +8,29 @@ from urllib import parse
 import urllib.request
 from requests import Session
 
-
+def report(a,b,c):
+    '''
+    a:已经下载的数据块
+    b:数据块的大小
+    c:远程文件的大小
+    '''
+    per = 100.0 * a * b / c
+    if per > 100:
+        per = 100
+    print ('%.2f%%' % per)
+# ————————————————
+# 版权声明：本文为CSDN博主「爱python的王三金」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+# 原文链接：https://blog.csdn.net/qq_37275405/article/details/80780925
 def download_single_lesson(url):
     session = Session()
     lessonKey = parse.parse_qs(parse.urlparse(
         url).query).get('lessonKey', [])[0]
     lesson_info_url = "https://www.eeo.cn/saasajax/webcast.ajax.php?action=getLessonLiveInfo"
     headers = {
-        'User-Agent': 'MQQBrowser/26 Mozilla/5.0 (Linux; U; Android 2.3.7; zh-cn; MB200 Build/GRJ22; CyanogenMod-7) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1'}
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.7',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
+    }
     if len(lessonKey) == 0:
         return False
     else:
@@ -42,11 +57,11 @@ def download_single_lesson(url):
                 else:
                     print("存在大小不一致重名文件 "+storepath+" 将要覆盖它")
             print("Downloading: " + filename + " ...")
-            urllib.request.urlretrieve(url, storepath)
+            urllib.request.urlretrieve(url, storepath,reporthook=report)
             print("Download: " + filename + " Done!")
         return True
     except:
-        print('稍后重试')
+        print('请关闭clash等代理，稍后重试')
 
 
 def main():
